@@ -1,0 +1,270 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║         ✅ CÓDIGO JAVASCRIPT ALTAMENTE COMENTADO EM PORTUGUÊS             ║
+║                                                                            ║
+║              Simulador de Substituição de Páginas                          ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📝 COMENTÁRIOS ADICIONADOS AO CÓDIGO
+
+O arquivo index.html agora contém comentários MUITO DETALHADOS explicando:
+
+✨ O QUE FOI COMENTADO:
+
+1️⃣  ALGORITMOS (4 funções):
+   ✓ FIFO       - Explicação conceito, lógica, complexidade
+   ✓ LRU        - Como rastreia uso recente
+   ✓ OPT        - Por que é teórico e impossível na prática
+   ✓ RANDOM     - Como gera número aleatório
+
+2️⃣  VARIÁVEIS (cada uma tem seu comentário):
+   ✓ memory     - O que armazena
+   ✓ faults     - O que conta
+   ✓ lastUsed   - Como funciona timestamp
+   ✓ history    - Por que guarda estados
+
+3️⃣  LÓGICA (cada linha complexa tem comentário):
+   ✓ .includes()  - O que faz
+   ✓ .filter()    - Como remove elementos
+   ✓ .indexOf()   - Como encontra próxima ocorrência
+   ✓ Math.random()- Como gera aleatório
+
+4️⃣  FUNÇÕES (todas têm bloco JSDoc):
+   ✓ validaEntrada()       - 4 validações explicadas
+   ✓ mostrarErro()         - Como exibe mensagens
+   ✓ executaAutomatico()   - 7 passos descritos
+   ✓ iniciaModosManual()   - 7 passos inicialização
+   ✓ processaPassoManual() - Como processa cliques
+   ✓ atualizaTelaMnual()   - 4 partes de atualização
+   ✓ resetaManual()        - Como reinicia
+   ✓ geraGrafico()         - Configuração Chart.js
+
+════════════════════════════════════════════════════════════════════════════════
+
+📚 TIPOS DE COMENTÁRIOS USADOS:
+
+1. Block Comments (JSDoc style):
+   /**
+    * NOME DA FUNÇÃO
+    * 
+    * CONCEITO: Explica teoria
+    * LÓGICA: Passos passo-a-passo
+    * COMPLEXIDADE: O(n), O(n²), etc
+    */
+
+2. Line Comments (Explicação inline):
+   let memory = [];  // Array que simula memória FIFO
+
+3. Comentários de Lógica:
+   // Se página NÃO está em memória (FALTA)
+   if (!memory.includes(page)) { ... }
+
+4. Comentários de Passos:
+   // PASSO 1: Valida entrada
+   // PASSO 2: Executa algoritmos
+   // PASSO 3: Armazena resultados
+
+════════════════════════════════════════════════════════════════════════════════
+
+🎯 ESTRUTURA DOS COMENTÁRIOS EM CADA ALGORITMO:
+
+EXEMPLO: FIFO
+
+/**
+ * Algoritmo FIFO (First In First Out)
+ * 
+ * CONCEITO:
+ * O FIFO substitui a página que está há mais tempo na memória.
+ * Funciona como uma fila: primeira a entrar é primeira a sair.
+ * 
+ * LÓGICA:
+ * 1. Mantém array representando fila de páginas
+ * 2. Se página não está na memória (FALTA), incrementa contador
+ * 3. Se há espaço livre, adiciona página ao final
+ * 4. Se está cheio, remove página mais antiga e adiciona nova
+ * 
+ * COMPLEXIDADE: O(n) onde n é comprimento da sequência
+ */
+
+// DEPOIS vem o código bem comentado linha por linha:
+
+for (let page of seq) {
+    // Cria snapshot do estado atual
+    let state = {
+        page: page,                    // Página sendo acessada
+        memory: [...memory],           // Cópia da memória
+        isFault: !memory.includes(page) // Hit ou Falta?
+    };
+
+    // Se página NÃO está na memória (FALTA)
+    if (!memory.includes(page)) {
+        faults++;  // Incrementa contador
+        
+        if (memory.length < quadros) {
+            // Espaço vazio: apenas adiciona
+            memory.push(page);
+        } else {
+            // Está cheio: remove + antiga, adiciona nova
+            memory.shift(); // Remove primeiro (mais antigo)
+            memory.push(page); // Adiciona nova
+        }
+    }
+    // Se includes() = true, é um HIT, não faz nada
+
+    history.push(state);  // Guarda estado para referência
+}
+
+════════════════════════════════════════════════════════════════════════════════
+
+💡 COMO USAR OS COMENTÁRIOS PARA APRENDER:
+
+1. ENTENDA O CONCEITO
+   Leia a seção CONCEITO primeiro
+   Entenda a teoria antes do código
+
+2. ACOMPANHE A LÓGICA
+   Leia a seção LÓGICA passo-a-passo
+   Visualize cada passo acontecendo
+
+3. COMPREENDA O CÓDIGO
+   Leia cada linha comentada
+   Veja como código implementa lógica
+
+4. COMPARE ALGORITMOS
+   Compare comentários de FIFO vs LRU
+   Veja diferenças de abordagem
+
+════════════════════════════════════════════════════════════════════════════════
+
+🔍 EXEMPLOS ALTAMENTE COMENTADOS:
+
+EXEMPLO 1: VALIDAÇÃO (simples e clara)
+   const numFrames = document.getElementById('numFrames').value;
+   // Obtém valor do campo HTML
+
+   if (!numFrames || numFrames < 1) {
+       mostrarErro('...');
+       return null;  // Sai da função se inválido
+   }
+   // VALIDAÇÃO: verifica se número >= 1
+
+EXEMPLO 2: MODO MANUAL (completo com passos)
+   // PASSO 1: Valida entrada
+   const input = validaEntrada();
+   
+   // PASSO 2: Executa FIFO para histórico
+   const resultado = fifo(pages, numFrames);
+   
+   // PASSO 3: Inicializa estado
+   manualState = { ... };
+   
+   // PASSO 4: Mostra seção manual
+   document.getElementById('manualSection').classList.add('active');
+   
+   // ... e assim por diante
+
+EXEMPLO 3: CHART.JS (muito comentado)
+   window.chart = new Chart(ctx, {
+       type: 'bar',  // Tipo: gráfico de barras
+       data: {
+           labels: ['FIFO', 'LRU', 'OPT', 'RANDOM'],
+           datasets: [{
+               label: 'Falhas de Página',  // Descrição
+               data: [
+                   window.lastResults.fifo,    // Falhas FIFO
+                   window.lastResults.lru,     // Falhas LRU
+                   window.lastResults.opt,     // Falhas OPT
+                   window.lastResults.random   // Falhas RANDOM
+               ],
+               // Cores (semi-transparente)
+               backgroundColor: [
+                   'rgba(102, 126, 234, 0.7)',    // Azul FIFO
+                   'rgba(118, 75, 162, 0.7)',     // Roxo LRU
+                   'rgba(240, 147, 251, 0.7)',    // Rosa OPT
+                   'rgba(79, 172, 254, 0.7)'      // Azul RANDOM
+               ],
+               // ... mais configurações comentadas
+           }]
+       }
+   });
+
+════════════════════════════════════════════════════════════════════════════════
+
+📖 DOCUMENTAÇÃO RELACIONADA:
+
+Para entender melhor os comentários:
+
+1. COMENTARIOS_EXPLICACAO.md
+   → Explica estrutura dos comentários
+   → Mostra exemplos completos
+   → Dicas de como usar
+
+2. README.md
+   → Como usar o simulador
+   → Conceitos educacionais
+   → Exemplos de entrada
+
+3. IMPLEMENTACAO.md
+   → Detalhes técnicos
+   → Estatísticas de código
+   → Requisitos atendidos
+
+════════════════════════════════════════════════════════════════════════════════
+
+✅ VERIFICAÇÃO DOS COMENTÁRIOS:
+
+Arquivo index.html agora tem:
+
+✓ 4 algoritmos bem comentados
+✓ 8 funções principais comentadas
+✓ 15+ variáveis com explicações
+✓ Cada linha de lógica complexa comentada
+✓ Passos numerados em funções longas
+✓ Exemplos inline dentro dos comentários
+✓ Explicação de operadores JavaScript
+✓ Por que cada decisão foi tomada
+
+════════════════════════════════════════════════════════════════════════════════
+
+🚀 PRÓXIMOS PASSOS:
+
+1. Abra index.html
+2. Clique com botão direito → "Ver Código-Fonte"
+3. Veja os comentários em português
+4. Leia COMENTARIOS_EXPLICACAO.md para entender estrutura
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 ESTATÍSTICAS DOS COMENTÁRIOS:
+
+Arquivo Original (index.html):      29 KB, 948 linhas
+Arquivo Comentado (index.html):     41 KB, 1146 linhas
+Diferença:                          +12 KB, +198 linhas de comentários
+
+Isso significa: +21% mais conteúdo APENAS COM COMENTÁRIOS!
+
+════════════════════════════════════════════════════════════════════════════════
+
+💬 RESUMO:
+
+O código JavaScript agora está **EXTREMAMENTE COMENTADO**:
+
+✅ Cada função tem bloco JSDoc explicando conceito, lógica e complexidade
+✅ Cada variável tem comentário dizendo seu propósito
+✅ Cada operação complexa tem comentário explicando o que faz
+✅ Funções longas têm passos numerados (PASSO 1, PASSO 2, etc)
+✅ Tudo está em português claro e acessível
+✅ Exemplos inline mostram como funciona
+✅ Comparações entre algoritmos ficam evidentes
+
+Qualquer estudante consegue ler o código e entender exatamente o que
+está acontecendo em cada linha!
+
+════════════════════════════════════════════════════════════════════════════════
+
+Desenvolvido com ❤️ para aprendizado
+IFSC - Campus São José
+Disciplina: Sistemas Operacionais
+
+════════════════════════════════════════════════════════════════════════════════

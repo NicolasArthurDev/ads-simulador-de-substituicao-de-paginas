@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Substituição de Páginas</title>
+    <!-- Importar Chart.js para criar gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-auto {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-auto:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-manual {
+            background: #764ba2;
+            color: white;
+        }
+
+        .btn-manual:hover {
+            background: #6a3e94;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        .btn-graph {
+            background: #f093fb;
+            color: white;
+        }
+
+        .btn-graph:hover {
+            background: #e087ed;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-step {
+            background: #4facfe;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-step:hover {
+            background: #3d9aee;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #ee5a52;
+        }
+
+        .output-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .result-content {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .memory-display {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .memory-frame {
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .memory-frame.empty {
+            background: #e0e0e0;
+            color: #999;
+        }
+
+        .memory-frame.hit {
+            background: #4caf50;
+            animation: pulse 0.6s;
+        }
+
+        .memory-frame.fault {
+            background: #ff6b6b;
+            animation: pulse 0.6s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .indicator {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .indicator.hit {
+            background: #4caf50;
+            color: white;
+        }
+
+        .indicator.fault {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .chart-container {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            position: relative;
+            height: 400px;
+        }
+
+        .manual-section {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #4facfe;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .manual-section.active {
+            display: block;
+        }
+
+        .sequence-display {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover {
+            border-color: #4facfe;
+            background: #e3f2fd;
+        }
+
+        .page-btn.processed {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+            cursor: default;
+        }
+
+        .page-btn.current {
+            background: #4facfe;
+            color: white;
+            border-color: #4facfe;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border-left: 4px solid #c62828;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border-left: 4px solid #4caf50;
+            display: none;
+        }
+
+        .success.show {
+            display: block;
+        }
+
+        .algorithm-results {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .algorithm-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            text-align: center;
+        }
+
+        .algorithm-card h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .algorithm-card .fault-count {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .algorithm-card .fault-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .input-section,
+            .button-section,
+            .output-section,
+            .algorithm-results {
+                grid-template-columns: 1fr;
+            }
+
+            .button-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Simulador de Substituição de Páginas</h1>
+        <p class="subtitle">FIFO • LRU • OPT • RANDOM - Algoritmos de Gerenciamento de Memória</p>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="input-group">
+                <label for="numFrames">Número de Quadros (mínimo 1):</label>
+                <input type="number" id="numFrames" min="1" value="3" placeholder="Ex: 3">
+            </div>
+            <div class="input-group">
+                <label for="pageSequence">Sequência de Páginas (espaço separado):</label>
+                <input type="text" id="pageSequence" placeholder="Ex: 7 0 1 2 0 3 0 4">
+            </div>
+        </div>
+
+        <!-- Button Section -->
+        <div class="button-section">
+            <button class="btn-auto" onclick="executaAutomatico()">🚀 Executar Automático</button>
+            <button class="btn-manual" onclick="iniciaModosManual()">👆 Modo Manual (FIFO)</button>
+            <button class="btn-graph" onclick="geraGrafico()">📊 Gerar Gráfico</button>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div class="error" id="errorMsg"></div>
+        <div class="success" id="successMsg"></div>
+
+        <!-- Automatic Results -->
+        <div class="output-section" id="automaticResults" style="display: none;">
+            <div class="result-box">
+                <h3>📈 Resultados dos Algoritmos</h3>
+                <div class="algorithm-results" id="algorithmResults"></div>
+            </div>
+        </div>
+
+        <!-- Manual Mode Section -->
+        <div class="manual-section" id="manualSection">
+            <h3>👆 Modo Manual - FIFO (Passo a Passo)</h3>
+            <p style="color: #555; margin-bottom: 15px;">Clique em cada página para ver a evolução do algoritmo FIFO:</p>
+            
+            <div class="sequence-display" id="sequenceDisplay"></div>
+            
+            <div class="result-box">
+                <h4 style="margin-bottom: 10px;">Estado da Memória:</h4>
+                <div class="memory-display" id="manualMemory"></div>
+                <div id="manualIndicator" class="indicator" style="display: none;"></div>
+                <div id="manualStats" style="margin-top: 15px; color: #666;"></div>
+            </div>
+
+            <button class="btn-reset" onclick="resetaManual()">🔄 Resetar Manual</button>
+        </div>
+
+        <!-- Chart Container -->
+        <div class="chart-container" id="chartContainer" style="display: none;">
+            <canvas id="comparisonChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // ==================== ALGORITMOS ====================
+
+        /**
+         * Algoritmo FIFO (First In First Out)
+         * 
+         * CONCEITO:
+         * O FIFO substitui a página que está há mais tempo na memória.
+         * Funciona como uma fila: a primeira página a entrar é a primeira a sair.
+         * 
+         * LÓGICA:
+         * 1. Mantém um array representando a fila de páginas
+         * 2. Quando uma página não está na memória (FALTA), incrementa o contador
+         * 3. Se há espaço livre, adiciona a nova página ao final
+         * 4. Se está cheio, remove a página mais antiga (primeiro elemento) e adiciona a nova
+         * 
+         * COMPLEXIDADE: O(n) onde n é o comprimento da sequência
+         */
+        function fifo(seq, quadros) {
+            let memory = [];           // Array que simula a memória (fila FIFO)
+            let faults = 0;            // Contador de falhas de página
+            let history = [];          // Armazena o histórico de estados
+
+            // Itera sobre cada página da sequência
+            for (let page of seq) {
+                // Cria um snapshot do estado atual
+                let state = {
+                    page: page,                    // Página atual sendo acessada
+                    memory: [...memory],           // Cópia da memória no momento
+                    isFault: !memory.includes(page) // Verifica se é hit ou falta
+                };
+
+                // Verifica se a página NÃO está na memória
+                if (!memory.includes(page)) {
+                    faults++;  // Incrementa contador de falhas
+                    
+                    if (memory.length < quadros) {
+                        // Se há espaço vazio na memória, apenas adiciona
+                        memory.push(page);
+                    } else {
+                        // Se está cheio, remove a mais antiga (primeira) e adiciona a nova
+                        memory.shift(); // Remove o primeiro elemento (mais antigo)
+                        memory.push(page); // Adiciona a nova página no final
+                    }
+                }
+                // Se page.includes(page) é true, é um HIT, não fazemos nada
+
+                history.push(state);  // Guarda o estado para referência futura
+            }
+
+            // Retorna resultado: número total de falhas e histórico de estados
+            return { faults, history };
+        }
+
+        /**
+         * Algoritmo LRU (Least Recently Used)
+         * 
+         * CONCEITO:
+         * LRU substitui a página que foi menos recentemente usada.
+         * Baseia-se no princípio de localidade temporal:
+         * páginas acessadas há pouco tempo tendem a ser acessadas novamente.
+         * 
+         * LÓGICA:
+         * 1. Mantém um objeto com timestamp do último uso de cada página
+         * 2. Quando há falta, procura a página com timestamp mais antigo
+         * 3. Remove essa página (menos recentemente usada) e adiciona a nova
+         * 4. Atualiza o timestamp de cada página acessada
+         * 
+         * COMPLEXIDADE: O(n*m) onde n é sequência e m é número de quadros
+         */
+        function lru(seq, quadros) {
+            let memory = [];                // Array da memória
+            let faults = 0;                 // Contador de falhas
+            let lastUsed = {};              // Dicionário: página -> último índice de uso
+            let history = [];               // Histórico de estados
+
+            // Itera com índice para rastrear quando cada página foi usada
+            for (let i = 0; i < seq.length; i++) {
+                let page = seq[i];
+                
+                // Snapshot do estado
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: !memory.includes(page)
+                };
+
+                // Se a página não está na memória (FALTA)
+                if (!memory.includes(page)) {
+                    faults++;
+                    
+                    if (memory.length < quadros) {
+                        // Se há espaço, apenas adiciona
+                        memory.push(page);
+                    } else {
+                        // Se está cheio, encontra a página menos recentemente usada
+                        let lruPage = memory[0];          // Inicia com a primeira página
+                        let minTime = lastUsed[lruPage] || 0;  // Seu timestamp (ou 0 se nunca foi usado)
+
+                        // Percorre todas as páginas na memória
+                        for (let p of memory) {
+                            // Se o timestamp desta página é menor que o mínimo encontrado
+                            if ((lastUsed[p] || 0) < minTime) {
+                                minTime = lastUsed[p] || 0;  // Atualiza o mínimo
+                                lruPage = p;                  // Esta é a página menos usada
+                            }
+                        }
+
+                        // Remove a página menos recentemente usada
+                        memory = memory.filter(p => p !== lruPage);
+                        // Adiciona a nova página
+                        memory.push(page);
+                    }
+                }
+
+                // Atualiza o timestamp de uso para a página atual
+                // 'i' é o índice atual, representando "quando" a página foi usada
+                lastUsed[page] = i;
+                
+                history.push(state);
+            }
+
+            return { faults, history };
+        }
+
+        /**
+         * Algoritmo OPT (Ótimo / Belády)
+         * 
+         * CONCEITO:
+         * OPT substitui a página cujo próximo uso ocorrerá MAIS TARDE no futuro.
+         * É um algoritmo teórico: requer conhecimento do futuro.
+         * Produz o menor número possível de falhas.
+         * 
+         * LÓGICA:
+         * 1. Quando há falta e memória cheia
+         * 2. Para cada página em memória, calcula quando será usada novamente
+         * 3. Substitui a página que será usada mais tarde (ou nunca)
+         * 4. Se uma página nunca mais será usada, prioridade máxima para substituir
+         * 
+         * COMPLEXIDADE: O(n²) - requer olhar o futuro
+         */
+        function opt(seq, quadros) {
+            let memory = [];          // Array da memória
+            let faults = 0;           // Contador de falhas
+            let history = [];         // Histórico de estados
+
+            // Itera sobre cada página na sequência
+            for (let i = 0; i < seq.length; i++) {
+                let page = seq[i];
+                
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: !memory.includes(page)
+                };
+
+                // Se a página não está na memória (FALTA)
+                if (!memory.includes(page)) {
+                    faults++;
+                    
+                    if (memory.length < quadros) {
+                        // Se há espaço, apenas adiciona
+                        memory.push(page);
+                    } else {
+                        // Se está cheio, encontra qual página substituir
+                        let pageToReplace = memory[0];  // Inicia com a primeira
+                        let maxDistance = -1;           // Distância máxima para próximo uso
+
+                        // Percorre cada página na memória
+                        for (let p of memory) {
+                            // Procura a página 'p' na sequência após a posição atual
+                            let nextUse = seq.slice(i + 1).indexOf(p);
+                            
+                            if (nextUse === -1) {
+                                // -1 significa nunca mais será usada
+                                nextUse = Infinity;  // Trata como infinitamente distante
+                            }
+
+                            // Se esta página será usada mais longe que a anterior
+                            if (nextUse > maxDistance) {
+                                maxDistance = nextUse;      // Atualiza a distância máxima
+                                pageToReplace = p;          // Esta é a página a substituir
+                            }
+                        }
+
+                        // Remove a página que será usada mais longe
+                        memory = memory.filter(p => p !== pageToReplace);
+                        // Adiciona a nova página
+                        memory.push(page);
+                    }
+                }
+
+                history.push(state);
+            }
+
+            return { faults, history };
+        }
+
+        /**
+         * Algoritmo RANDOM
+         * 
+         * CONCEITO:
+         * RANDOM escolhe uma página aleatória para substituição.
+         * Não usa nenhuma lógica, apenas seleciona ao acaso.
+         * 
+         * LÓGICA:
+         * 1. Quando há falta e memória cheia
+         * 2. Gera um índice aleatório entre 0 e número de quadros-1
+         * 3. Remove a página nesse índice aleatório
+         * 4. Adiciona a nova página
+         * 
+         * COMPLEXIDADE: O(n) - mas sem lógica inteligente
+         * 
+         * USO: Serve como baseline para comparar se outros algoritmos são bons
+         */
+        function random(seq, quadros) {
+            let memory = [];      // Array da memória
+            let faults = 0;       // Contador de falhas
+            let history = [];     // Histórico de estados
+
+            for (let page of seq) {
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: !memory.includes(page)
+                };
+
+                // Se a página não está na memória (FALTA)
+                if (!memory.includes(page)) {
+                    faults++;
+                    
+                    if (memory.length < quadros) {
+                        // Se há espaço, apenas adiciona
+                        memory.push(page);
+                    } else {
+                        // Se está cheio, escolhe uma página aleatória para remover
+                        // Math.random() gera número entre 0 e 0.999...
+                        // Multiplica pelo tamanho da memória para ter índice válido
+                        // Math.floor() arredonda para baixo para pegar índice inteiro
+                        let randomIndex = Math.floor(Math.random() * memory.length);
+                        
+                        // Remove a página no índice aleatório
+                        memory.splice(randomIndex, 1);  // splice(índice, quantos remover)
+                        // Adiciona a nova página
+                        memory.push(page);
+                    }
+                }
+
+                history.push(state);
+            }
+
+            return { faults, history };
+        }
+
+        // ==================== FUNÇÕES DE VALIDAÇÃO ====================
+
+        /**
+         * VALIDAÇÃO DE ENTRADA
+         * 
+         * Valida se os dados fornecidos pelo usuário são válidos:
+         * - Número de quadros >= 1
+         * - Sequência não vazia
+         * - Todos os valores são números inteiros válidos
+         */
+        function validaEntrada() {
+            // Obtém os valores dos campos de entrada HTML
+            const numFrames = document.getElementById('numFrames').value;
+            const pageSequence = document.getElementById('pageSequence').value.trim();
+
+            const errorMsg = document.getElementById('errorMsg');
+
+            // VALIDAÇÃO 1: Verifica se número de quadros é válido
+            if (!numFrames || numFrames < 1) {
+                mostrarErro('O número de quadros deve ser pelo menos 1.');
+                return null;  // Retorna null para indicar erro
+            }
+
+            // VALIDAÇÃO 2: Verifica se sequência foi fornecida
+            if (!pageSequence) {
+                mostrarErro('Por favor, insira uma sequência de páginas.');
+                return null;
+            }
+
+            // VALIDAÇÃO 3: Converte string em array de números
+            // split() divide a string por espaços
+            // map() converte cada elemento para número inteiro
+            // filter() remove elementos que não são números (NaN)
+            const pages = pageSequence
+                .split(/\s+/)                    // Divide por um ou mais espaços
+                .map(p => parseInt(p))           // Converte cada string para número
+                .filter(p => !isNaN(p));         // Remove valores inválidos (NaN)
+
+            // VALIDAÇÃO 4: Verifica se resultado é uma sequência válida
+            if (pages.length === 0) {
+                mostrarErro('A sequência de páginas inválida. Use números separados por espaço.');
+                return null;
+            }
+
+            // Se passou em todas as validações, retorna um objeto com dados válidos
+            return {
+                numFrames: parseInt(numFrames),  // Número de quadros como inteiro
+                pages: pages                      // Array de números das páginas
+            };
+        }
+
+        /**
+         * MOSTRAR ERRO
+         * Exibe uma mensagem de erro ao usuário
+         */
+        function mostrarErro(mensagem) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = '❌ ' + mensagem;  // Adiciona mensagem com emoji
+            errorMsg.classList.add('show');          // Mostra o elemento
+            
+            // Remove a mensagem automaticamente após 5 segundos
+            setTimeout(() => errorMsg.classList.remove('show'), 5000);
+        }
+
+        /**
+         * MOSTRAR SUCESSO
+         * Exibe uma mensagem de sucesso ao usuário
+         */
+        function mostrarSucesso(mensagem) {
+            const successMsg = document.getElementById('successMsg');
+            successMsg.textContent = '✅ ' + mensagem;  // Adiciona mensagem com emoji
+            successMsg.classList.add('show');          // Mostra o elemento
+            
+            // Remove a mensagem automaticamente após 5 segundos
+            setTimeout(() => successMsg.classList.remove('show'), 5000);
+        }
+
+        // ==================== MODO AUTOMÁTICO ====================
+
+        /**
+         * EXECUTA AUTOMÁTICO
+         * 
+         * Função principal que:
+         * 1. Valida entrada do usuário
+         * 2. Executa todos os 4 algoritmos
+         * 3. Exibe resultados em cards
+         * 4. Armazena resultados para gráfico futuro
+         */
+        function executaAutomatico() {
+            // PASSO 1: Valida entrada
+            const input = validaEntrada();
+            if (!input) return;  // Se validação falhar, sai da função
+
+            const { numFrames, pages } = input;  // Desestrutura os dados
+
+            // PASSO 2: Executa cada algoritmo com a mesma entrada
+            const resultadoFIFO = fifo(pages, numFrames);     // Executa FIFO
+            const resultadoLRU = lru(pages, numFrames);       // Executa LRU
+            const resultadoOPT = opt(pages, numFrames);       // Executa OPT
+            const resultadoRANDOM = random(pages, numFrames); // Executa RANDOM
+
+            // PASSO 3: Armazena resultados em variável global para uso posterior
+            // (especialmente para o gráfico)
+            window.lastResults = {
+                fifo: resultadoFIFO.faults,      // Número de falhas do FIFO
+                lru: resultadoLRU.faults,        // Número de falhas do LRU
+                opt: resultadoOPT.faults,        // Número de falhas do OPT
+                random: resultadoRANDOM.faults,  // Número de falhas do RANDOM
+                pages: pages,                     // Sequência usada
+                numFrames: numFrames              // Número de quadros usado
+            };
+
+            // PASSO 4: Monta HTML com resultado de cada algoritmo
+            const resultsDiv = document.getElementById('algorithmResults');
+            resultsDiv.innerHTML = `
+                <!-- Card para resultado FIFO -->
+                <div class="algorithm-card">
+                    <h4>FIFO</h4>
+                    <div class="fault-count">${resultadoFIFO.faults}</div>
+                    <div class="fault-label">Falhas de Página</div>
+                </div>
+                <!-- Card para resultado LRU -->
+                <div class="algorithm-card">
+                    <h4>LRU</h4>
+                    <div class="fault-count">${resultadoLRU.faults}</div>
+                    <div class="fault-label">Falhas de Página</div>
+                </div>
+                <!-- Card para resultado OPT -->
+                <div class="algorithm-card">
+                    <h4>OPT (Ótimo)</h4>
+                    <div class="fault-count">${resultadoOPT.faults}</div>
+                    <div class="fault-label">Falhas de Página</div>
+                </div>
+                <!-- Card para resultado RANDOM -->
+                <div class="algorithm-card">
+                    <h4>RANDOM</h4>
+                    <div class="fault-count">${resultadoRANDOM.faults}</div>
+                    <div class="fault-label">Falhas de Página</div>
+                </div>
+            `;
+
+            // PASSO 5: Mostra área de resultados
+            document.getElementById('automaticResults').style.display = 'grid';
+            
+            // PASSO 6: Esconde outras seções (manual e gráfico)
+            document.getElementById('manualSection').classList.remove('active');
+            document.getElementById('chartContainer').style.display = 'none';
+
+            // PASSO 7: Exibe mensagem de sucesso
+            mostrarSucesso('Algoritmos executados com sucesso!');
+        }
+
+        // ==================== MODO MANUAL ====================
+
+        /**
+         * ESTADO MANUAL
+         * 
+         * Variável global que armazena o estado do modo manual
+         * Permite que funções diferentes acessem e modifiquem o estado
+         */
+        let manualState = {
+            currentStep: 0,      // Qual página estamos processando
+            memory: [],          // Estado atual da memória
+            faults: 0,           // Contador de falhas até agora
+            hits: 0,             // Contador de hits até agora
+            history: null,       // Histórico completo de estados
+            pages: null,         // Sequência de páginas
+            numFrames: null      // Número de quadros
+        };
+
+        /**
+         * INICIA MODO MANUAL
+         * 
+         * Função que prepara e inicia o modo manual:
+         * 1. Valida entrada
+         * 2. Executa FIFO para obter histórico
+         * 3. Cria interface com botões clicáveis
+         * 4. Exibe estado inicial
+         */
+        function iniciaModosManual() {
+            // PASSO 1: Valida entrada do usuário
+            const input = validaEntrada();
+            if (!input) return;
+
+            const { numFrames, pages } = input;
+
+            // PASSO 2: Executa FIFO para obter histórico de estados
+            const resultado = fifo(pages, numFrames);
+
+            // PASSO 3: Inicializa estado manual com valores limpos
+            manualState = {
+                currentStep: 0,           // Começa no primeiro passo
+                memory: [],               // Memória começa vazia
+                faults: 0,                // Falhas começam em 0
+                hits: 0,                  // Hits começam em 0
+                history: resultado.history, // Armazena histórico do FIFO
+                pages: pages,
+                numFrames: numFrames
+            };
+
+            // PASSO 4: Mostra a seção de modo manual e esconde outras
+            document.getElementById('manualSection').classList.add('active');
+            document.getElementById('automaticResults').style.display = 'none';
+            document.getElementById('chartContainer').style.display = 'none';
+
+            // PASSO 5: Cria botões para cada página
+            const sequenceDisplay = document.getElementById('sequenceDisplay');
+            sequenceDisplay.innerHTML = '';  // Limpa botões anteriores
+
+            pages.forEach((page, index) => {
+                // Cria um botão para cada página
+                const btn = document.createElement('button');
+                btn.className = 'page-btn';
+                btn.textContent = page;
+                // Quando clicado, processa este passo
+                btn.onclick = () => processaPassoManual(index);
+                sequenceDisplay.appendChild(btn);
+            });
+
+            // PASSO 6: Atualiza a tela com estado inicial
+            atualizaTelaMnual();
+            
+            // PASSO 7: Exibe mensagem de instrução
+            mostrarSucesso('Modo manual iniciado. Clique nas páginas para avançar!');
+        }
+
+        /**
+         * PROCESSA PASSO MANUAL
+         * 
+         * Função chamada quando usuário clica em uma página
+         * Processa todos os passos até o clicado (permite avançar múltiplos passos)
+         */
+        function processaPassoManual(stepIndex) {
+            // Não permite voltar (apenas avançar)
+            if (stepIndex < manualState.currentStep) return;
+
+            // Processa cada passo do atual até o clicado
+            for (let i = manualState.currentStep; i <= stepIndex; i++) {
+                // Obtém o estado para este passo do histórico
+                const state = manualState.history[i];
+                
+                // Atualiza memória com estado deste passo
+                manualState.memory = state.memory;
+
+                // Incrementa contador apropriado (falta ou hit)
+                if (state.isFault) {
+                    manualState.faults++;  // É uma falta
+                } else {
+                    manualState.hits++;    // É um hit
+                }
+
+                // Avança o contador de passos
+                manualState.currentStep = i + 1;
+            }
+
+            // Atualiza a tela para mostrar novo estado
+            atualizaTelaMnual();
+        }
+
+        /**
+         * ATUALIZA TELA MANUAL
+         * 
+         * Função que refresca toda a interface do modo manual
+         * Chamada sempre que estado muda
+         */
+        function atualizaTelaMnual() {
+            // PARTE 1: Atualiza display da memória
+            const memoryDisplay = document.getElementById('manualMemory');
+            memoryDisplay.innerHTML = '';  // Limpa display anterior
+
+            if (manualState.memory.length === 0) {
+                // Se memória está vazia, exibe mensagem
+                memoryDisplay.innerHTML = '<span style="color: #999;">Memória vazia</span>';
+            } else {
+                // Para cada página na memória, cria um elemento visual
+                manualState.memory.forEach(page => {
+                    const frame = document.createElement('div');
+                    frame.className = 'memory-frame';
+                    frame.textContent = page;
+                    memoryDisplay.appendChild(frame);
+                });
+            }
+
+            // Adiciona quadros vazios para mostrar espaço disponível
+            // Se tem 2 páginas em 3 quadros, mostra 1 quadro vazio
+            for (let i = manualState.memory.length; i < manualState.numFrames; i++) {
+                const frame = document.createElement('div');
+                frame.className = 'memory-frame empty';
+                frame.textContent = '—';  // Usa travessão para indicar vazio
+                memoryDisplay.appendChild(frame);
+            }
+
+            // PARTE 2: Atualiza indicador de hit/falta
+            if (manualState.currentStep > 0) {
+                // Obtém estado do passo anterior para verificar hit/falta
+                const lastState = manualState.history[manualState.currentStep - 1];
+                const indicator = document.getElementById('manualIndicator');
+                indicator.style.display = 'block';  // Mostra indicador
+
+                if (lastState.isFault) {
+                    // Se foi falta, mostra mensagem em vermelho
+                    indicator.className = 'indicator fault';
+                    indicator.textContent = '❌ FALTA DE PÁGINA (Substituição realizada)';
+                } else {
+                    // Se foi hit, mostra mensagem em verde
+                    indicator.className = 'indicator hit';
+                    indicator.textContent = '✅ HIT (Página já estava em memória)';
+                }
+            }
+
+            // PARTE 3: Atualiza estatísticas
+            const stats = document.getElementById('manualStats');
+            stats.innerHTML = `
+                <strong>Progresso:</strong> ${manualState.currentStep}/${manualState.pages.length} páginas<br>
+                <strong>Faltas:</strong> ${manualState.faults} | <strong>Hits:</strong> ${manualState.hits}
+            `;
+
+            // PARTE 4: Atualiza estado dos botões
+            // Cada botão tem cor diferente dependendo de estado
+            document.querySelectorAll('.page-btn').forEach((btn, index) => {
+                btn.classList.remove('processed', 'current');  // Remove classes
+                
+                if (index < manualState.currentStep) {
+                    // Já foi processado
+                    btn.classList.add('processed');
+                } else if (index === manualState.currentStep) {
+                    // É o próximo (atual)
+                    btn.classList.add('current');
+                }
+            });
+        }
+
+        /**
+         * RESETA MANUAL
+         * 
+         * Função que reinicia o modo manual
+         * Mantém histórico mas reseta o progresso
+         */
+        function resetaManual() {
+            // Reseta apenas valores de progresso, mantém histórico e sequência
+            manualState = {
+                currentStep: 0,       // Volta para passo 0
+                memory: [],           // Memória vazia
+                faults: 0,            // Falhas zeradas
+                hits: 0,              // Hits zerados
+                history: manualState.history,    // Mantém histórico
+                pages: manualState.pages,        // Mantém sequência
+                numFrames: manualState.numFrames // Mantém quadros
+            };
+            
+            atualizaTelaMnual();  // Atualiza visualização
+            mostrarSucesso('Modo manual resetado!');
+        }
+
+        // ==================== MODO GRÁFICO ====================
+
+        /**
+         * GERA GRÁFICO
+         * 
+         * Função que cria um gráfico de barras comparativo
+         * usando a biblioteca Chart.js
+         */
+        function geraGrafico() {
+            // VALIDAÇÃO: Verifica se existem resultados para plotar
+            if (!window.lastResults) {
+                mostrarErro('Por favor, execute os algoritmos automaticamente primeiro!');
+                return;
+            }
+
+            // Mostra container do gráfico e esconde outros
+            document.getElementById('chartContainer').style.display = 'block';
+            document.getElementById('automaticResults').style.display = 'none';
+            document.getElementById('manualSection').classList.remove('active');
+
+            // Obtém contexto do canvas (elemento onde será desenhado gráfico)
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+            // Destrói gráfico anterior se existir (evita duplicação)
+            if (window.chart) {
+                window.chart.destroy();
+            }
+
+            // Cria novo gráfico com Chart.js
+            window.chart = new Chart(ctx, {
+                type: 'bar',  // Tipo: gráfico de barras
+                data: {
+                    // Rótulos do eixo X (nomes dos algoritmos)
+                    labels: ['FIFO', 'LRU', 'OPT', 'RANDOM'],
+                    datasets: [{
+                        label: 'Falhas de Página',  // Descrição do dados
+                        // Dados: valores de falhas para cada algoritmo
+                        data: [
+                            window.lastResults.fifo,    // Falhas do FIFO
+                            window.lastResults.lru,     // Falhas do LRU
+                            window.lastResults.opt,     // Falhas do OPT
+                            window.lastResults.random   // Falhas do RANDOM
+                        ],
+                        // Cores das barras (semi-transparente)
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.7)',    // Azul para FIFO
+                            'rgba(118, 75, 162, 0.7)',     // Roxo para LRU
+                            'rgba(240, 147, 251, 0.7)',    // Rosa para OPT
+                            'rgba(79, 172, 254, 0.7)'      // Azul claro para RANDOM
+                        ],
+                        // Cores das bordas (sólidas)
+                        borderColor: [
+                            'rgba(102, 126, 234, 1)',
+                            'rgba(118, 75, 162, 1)',
+                            'rgba(240, 147, 251, 1)',
+                            'rgba(79, 172, 254, 1)'
+                        ],
+                        borderWidth: 2,      // Largura da borda
+                        borderRadius: 6      // Cantos arredondados
+                    }]
+                },
+                // Opções de configuração do gráfico
+                options: {
+                    responsive: true,           // Adapta ao tamanho da tela
+                    maintainAspectRatio: false, // Não mantém proporção (preenche container)
+                    plugins: {
+                        title: {
+                            display: true,
+                            // Título com informações da simulação
+                            text: `Comparação de Algoritmos (${window.lastResults.numFrames} quadros, ${window.lastResults.pages.length} referências)`,
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'  // Legenda no topo
+                        }
+                    },
+                    scales: {
+                        // Configuração do eixo Y
+                        y: {
+                            beginAtZero: true,  // Começa do zero
+                            title: {
+                                display: true,
+                                text: 'Número de Falhas'  // Rótulo do eixo
+                            }
+                        }
+                    }
+                }
+            });
+
+            mostrarSucesso('Gráfico gerado com sucesso!');
+        }
+    </script>
+</body>
+</html>

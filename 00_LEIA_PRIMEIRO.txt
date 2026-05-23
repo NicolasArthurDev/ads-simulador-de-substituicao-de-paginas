@@ -1,0 +1,261 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║           🖥️  SIMULADOR DE SUBSTITUIÇÃO DE PÁGINAS  🖥️                      ║
+║                                                                              ║
+║                            ⭐ LEIA PRIMEIRO ⭐                              ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Bem-vindo! Você tem tudo que precisa para executar o simulador de substituição
+de páginas. Aqui está o guia para começar:
+
+════════════════════════════════════════════════════════════════════════════════
+
+🚀 INÍCIO RÁPIDO (3 PASSOS):
+
+1️⃣  Abra o arquivo: index.html (com qualquer navegador)
+
+2️⃣  Digite:
+    - Número de quadros: 3
+    - Sequência: 7 0 1 2 0 3 0 4
+
+3️⃣  Clique um dos botões:
+    - "Executar Automático" para ver resultados
+    - "Modo Manual" para aprender passo-a-passo
+    - "Gerar Gráfico" para visualizar comparação
+
+════════════════════════════════════════════════════════════════════════════════
+
+📚 ARQUIVOS INCLUSOS:
+
+┌─ PRINCIPAL ──────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  📄 index.html                                                              │
+│     → O SIMULADOR PRINCIPAL (único arquivo necessário!)                    │
+│     → Contém HTML + CSS + JavaScript                                        │
+│     → Abra em seu navegador favorito                                        │
+│     → Funciona offline após carregar                                        │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ DOCUMENTAÇÃO ───────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  📋 README.md                                                               │
+│     → Documentação completa de uso                                          │
+│     → Como usar cada modo                                                   │
+│     → Exemplos detalhados                                                   │
+│     → Conceitos educacionais                                                │
+│                                                                              │
+│  ⚡ GUIA_RAPIDO.md                                                          │
+│     → Referência rápida para usar                                           │
+│     → Sequências de exemplo prontas                                         │
+│     → Dicas e troubleshooting                                               │
+│     → Interpretação de resultados                                           │
+│                                                                              │
+│  🔧 IMPLEMENTACAO.md                                                        │
+│     → Documentação técnica detalhada                                        │
+│     → Explicação de cada algoritmo                                          │
+│     → Estatísticas do código                                                │
+│     → Checklist de requisitos                                               │
+│                                                                              │
+│  ✅ ENTREGA.txt                                                             │
+│     → Lista completa de entrega                                             │
+│     → Checklist de funcionalidades                                          │
+│     → Status de validação                                                   │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════════════════════
+
+🎯 QUAL ARQUIVO ABRIR?
+
+✨ SÓ PRECISA ABRIR: index.html
+
+   Isso! Apenas um arquivo. Clique duplo e pronto!
+
+════════════════════════════════════════════════════════════════════════════════
+
+📖 QUAL DOCUMENTO LER?
+
+👤 Se você é um USUÁRIO (quer usar o simulador):
+   → Leia: GUIA_RAPIDO.md
+   → Depois: README.md
+
+🔧 Se você é um DESENVOLVEDOR (quer entender o código):
+   → Leia: IMPLEMENTACAO.md
+   → Depois: Veja o código em index.html
+
+📋 Se é uma ENTREGA OFICIAL:
+   → Veja: ENTREGA.txt
+   → Confirme todos ✅ atendidos
+
+════════════════════════════════════════════════════════════════════════════════
+
+⚡ EXEMPLO RÁPIDO PARA COMEÇAR:
+
+1. Abra index.html
+2. Veja que ele já vem com:
+   - Quadros: 3
+   - Sequência: (vazia, mas com sugestão)
+3. Digite na sequência: 7 0 1 2 0 3 0 4
+4. Clique "Executar Automático"
+5. Veja os resultados aparecerem!
+
+Resultado esperado:
+  FIFO:   6 falhas
+  LRU:    5 falhas
+  OPT:    4 falhas (melhor!)
+  RANDOM: ~5 falhas
+
+════════════════════════════════════════════════════════════════════════════════
+
+🎨 3 MODOS DE USAR:
+
+┌─ MODO 1: AUTOMÁTICO (Para Comparar) ─────────────────────────────────────────┐
+│                                                                              │
+│ Clique: "🚀 Executar Automático"                                            │
+│                                                                              │
+│ O que vê: Cards com número de falhas para cada algoritmo                   │
+│                                                                              │
+│ Melhor para: Comparar desempenho, fazer gráficos                            │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ MODO 2: MANUAL (Para Aprender) ──────────────────────────────────────────────┐
+│                                                                              │
+│ Clique: "👆 Modo Manual (FIFO)"                                             │
+│                                                                              │
+│ O que vê: Sequência de botões, clique um por um                            │
+│           Memória atualiza, vê hits/faltas em tempo real                   │
+│                                                                              │
+│ Melhor para: Entender o algoritmo, ensinar, demonstração em sala           │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─ MODO 3: GRÁFICO (Para Apresentar) ──────────────────────────────────────────┐
+│                                                                              │
+│ Clique: "📊 Gerar Gráfico"                                                  │
+│                                                                              │
+│ O que vé: Gráfico de barras bonito comparando os 4 algoritmos              │
+│                                                                              │
+│ Melhor para: Slides, apresentações, relatórios                             │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════════════════════
+
+💡 DICAS DE OURO:
+
+✨ Para APRENDER:
+   Use Modo Manual com uma sequência pequena
+   Observe o padrão de hits e faltas
+   Veja como FIFO funciona diferente de LRU
+
+✨ Para COMPARAR:
+   Use Modo Automático com várias sequências
+   Note que OPT é sempre >= que os outros
+   LRU geralmente está no meio
+
+✨ Para APRESENTAR:
+   Use Modo Manual com projetor (mais visual!)
+   Gere gráfico para colocar nos slides
+   Explique por que OPT é melhor mas impraticável
+
+════════════════════════════════════════════════════════════════════════════════
+
+🔍 ALGORITMOS EXPLICADOS EM 30 SEGUNDOS:
+
+🔵 FIFO (Simples)
+   → Mais antigo sai, novo entra
+   → Rápido, mas não é muito inteligente
+
+🟣 LRU (Mais Inteligente)
+   → A página não usada há mais tempo sai
+   → Baseia-se em localidade temporal
+   → Muito melhor que FIFO na prática
+
+🩷 OPT (Ótimo, mas Impossível)
+   → Tira a página que vai ser usada mais tarde
+   → Teórico: requer saber o futuro!
+   → Sempre melhor ou igual aos outros
+   → Serve como limite superior
+
+🔷 RANDOM (Baseline)
+   → Tira uma qualquer aleatoriamente
+   → Para comparar se outra é melhor
+   → Resultado imprevisível
+
+════════════════════════════════════════════════════════════════════════════════
+
+❓ PERGUNTAS FREQUENTES:
+
+P: "O simulador funciona sem internet?"
+R: Sim! Após a primeira vez que abre, funciona offline. (Chart.js é carregado
+   via CDN, mas se falhar, o resto ainda funciona)
+
+P: "Qual navegador devo usar?"
+R: Qualquer um moderno: Chrome, Firefox, Safari, Edge. Funciona até em mobile!
+
+P: "Posso modificar o código?"
+R: Sim! É tudo em um arquivo HTML. Abra em editor de texto e customize.
+
+P: "Como executo em sala de aula?"
+R: Abra index.html em um projetor. Use Modo Manual para demonstração ao vivo.
+
+P: "Preciso de instalação?"
+R: Não! Apenas abra o arquivo HTML. Nada para instalar.
+
+════════════════════════════════════════════════════════════════════════════════
+
+⚠️ POSSÍVEIS PROBLEMAS:
+
+❌ "Não carrega a página"
+   ✓ Atualize (Ctrl+R ou F5)
+   ✓ Use navegador moderno
+   ✓ Tente outro navegador
+
+❌ "Gráfico não aparece"
+   ✓ Execute Modo Automático primeiro
+   ✓ Espere Chart.js carregar
+   ✓ Reconecte-se
+
+❌ "Botões não funcionam"
+   ✓ Verifique entrada (quadros e sequência)
+   ✓ Veja mensagens de erro
+   ✓ Siga as instruções em vermelho
+
+════════════════════════════════════════════════════════════════════════════════
+
+🎓 PRÓXIMO PASSO:
+
+1. Abra index.html AGORA
+2. Teste com: 3 quadros, sequência "7 0 1 2 0 3 0 4"
+3. Experimente todos 3 modos
+4. Leia GUIA_RAPIDO.md para mais exemplos
+5. Use em sua apresentação/aula!
+
+════════════════════════════════════════════════════════════════════════════════
+
+📞 SUPORTE:
+
+Se tiver dúvidas:
+• Veja GUIA_RAPIDO.md (seção "Troubleshooting")
+• Veja README.md (seção "Compatibilidade")
+• Veja IMPLEMENTACAO.md (detalhes técnicos)
+
+════════════════════════════════════════════════════════════════════════════════
+
+✅ VOCÊ ESTÁ PRONTO!
+
+Tudo que você precisa está aqui. Nenhuma instalação, nenhuma dependência,
+nenhuma complicação.
+
+👉 PRÓXIMA AÇÃO: Abra index.html em seu navegador agora!
+
+════════════════════════════════════════════════════════════════════════════════
+
+Desenvolvido com ❤️ para Sistemas Operacionais
+IFSC - Campus São José
+Professor: Eraldo Silveira e Silva
+
+════════════════════════════════════════════════════════════════════════════════
