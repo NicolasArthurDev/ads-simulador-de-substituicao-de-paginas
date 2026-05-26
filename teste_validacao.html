@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validação de Falhas de Página</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .test-case {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        .trace-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.85em;
+        }
+        .trace-table th {
+            background: #667eea;
+            color: white;
+            padding: 8px;
+            text-align: left;
+        }
+        .trace-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .trace-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .hit {
+            background: #d4edda;
+        }
+        .fault {
+            background: #f8d7da;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .result.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        .result.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Validação de Falhas de Página</h1>
+        <p>Teste manual para verificar se os algoritmos estão calculando corretamente o número de falhas.</p>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Copiar as funções dos algoritmos
+        function fifo(seq, quadros) {
+            let memory = [];
+            let faults = 0;
+            let history = [];
+
+            for (let page of seq) {
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: !memory.includes(page)
+                };
+
+                if (!memory.includes(page)) {
+                    faults++;
+                    if (memory.length < quadros) {
+                        memory.push(page);
+                    } else {
+                        memory.shift();
+                        memory.push(page);
+                    }
+                }
+                history.push(state);
+            }
+
+            return { faults, history };
+        }
+
+        function lru(seq, quadros) {
+            let memory = [];
+            let faults = 0;
+            let lastUsed = {};
+            let history = [];
+
+            for (let i = 0; i < seq.length; i++) {
+                let page = seq[i];
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: !memory.includes(page)
+                };
+
+                if (!memory.includes(page)) {
+                    faults++;
+                    if (memory.length < quadros) {
+                        memory.push(page);
+                    } else {
+                        let lruPage = memory[0];
+                        let minTime = (lastUsed[memory[0]] !== undefined) ? lastUsed[memory[0]] : -1;
+
+                        for (let p of memory) {
+                            let pTime = (lastUsed[p] !== undefined) ? lastUsed[p] : -1;
+                            if (pTime < minTime) {
+                                minTime = pTime;
+                                lruPage = p;
+                            }
+                        }
+
+                        memory = memory.filter(p => p !== lruPage);
+                        memory.push(page);
+                    }
+                }
+
+                lastUsed[page] = i;
+                history.push(state);
+            }
+
+            return { faults, history };
+        }
+
+        function opt(seq, quadros) {
+            let memory = [];
+            let faults = 0;
+            let history = [];
+
+            for (let i = 0; i < seq.length; i++) {
+                let page = seq[i];
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: !memory.includes(page)
+                };
+
+                if (!memory.includes(page)) {
+                    faults++;
+                    if (memory.length < quadros) {
+                        memory.push(page);
+                    } else {
+                        let pageToReplace = memory[0];
+                        let maxDistance = -1;
+
+                        for (let p of memory) {
+                            let nextUse = seq.slice(i + 1).indexOf(p);
+                            if (nextUse === -1) {
+                                nextUse = Infinity;
+                            }
+                            if (nextUse > maxDistance) {
+                                maxDistance = nextUse;
+                                pageToReplace = p;
+                            }
+                        }
+
+                        memory = memory.filter(p => p !== pageToReplace);
+                        memory.push(page);
+                    }
+                }
+
+                history.push(state);
+            }
+
+            return { faults, history };
+        }
+
+        function random(seq, quadros) {
+            let memory = [];
+            let faults = 0;
+            let history = [];
+
+            for (let page of seq) {
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: !memory.includes(page)
+                };
+
+                if (!memory.includes(page)) {
+                    faults++;
+                    if (memory.length < quadros) {
+                        memory.push(page);
+                    } else {
+                        let randomIndex = Math.floor(Math.random() * memory.length);
+                        memory.splice(randomIndex, 1);
+                        memory.push(page);
+                    }
+                }
+
+                history.push(state);
+            }
+
+            return { faults, history };
+        }
+
+        // Testes
+        const testCases = [
+            {
+                name: "Teste 1: Sequência simples",
+                sequence: [7, 0, 1, 2, 0, 3, 0, 4],
+                quadros: 3,
+                expectedFIFO: 7,
+                expectedLRU: 6,
+                expectedOPT: 6
+            },
+            {
+                name: "Teste 2: Sem repetição",
+                sequence: [1, 2, 3, 4, 5],
+                quadros: 3,
+                expectedFIFO: 5,
+                expectedLRU: 5,
+                expectedOPT: 5
+            },
+            {
+                name: "Teste 3: Localidade perfeita",
+                sequence: [1, 1, 1, 2, 2, 2, 3, 3, 3],
+                quadros: 3,
+                expectedFIFO: 3,
+                expectedLRU: 3,
+                expectedOPT: 3
+            },
+            {
+                name: "Teste 4: Alternância",
+                sequence: [1, 2, 1, 2, 1, 2, 1, 2],
+                quadros: 2,
+                expectedFIFO: 2,
+                expectedLRU: 2,
+                expectedOPT: 2
+            }
+        ];
+
+        let resultsHTML = '';
+
+        testCases.forEach((test, index) => {
+            const fifoResult = fifo(test.sequence, test.quadros);
+            const lruResult = lru(test.sequence, test.quadros);
+            const optResult = opt(test.sequence, test.quadros);
+            const randomResult = random(test.sequence, test.quadros);
+
+            let testHTML = `
+                <div class="test-case">
+                    <h3>${test.name}</h3>
+                    <p><strong>Sequência:</strong> ${test.sequence.join(' → ')}</p>
+                    <p><strong>Quadros:</strong> ${test.quadros}</p>
+                    
+                    <table class="trace-table">
+                        <tr>
+                            <th>Passo</th>
+                            <th>Página</th>
+                            <th>FIFO (Memória)</th>
+                            <th>FIFO</th>
+                            <th>LRU (Memória)</th>
+                            <th>LRU</th>
+                            <th>OPT (Memória)</th>
+                            <th>OPT</th>
+                        </tr>
+            `;
+
+            for (let i = 0; i < test.sequence.length; i++) {
+                const fifoState = fifoResult.history[i];
+                const lruState = lruResult.history[i];
+                const optState = optResult.history[i];
+
+                const formatMemory = (mem) => mem.length === 0 ? '[ ]' : '[ ' + mem.join(', ') + ' ]';
+                const fifoClass = fifoState.isFault ? 'fault' : 'hit';
+                const lruClass = lruState.isFault ? 'fault' : 'hit';
+                const optClass = optState.isFault ? 'fault' : 'hit';
+
+                testHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${fifoState.page}</strong></td>
+                        <td>${formatMemory(fifoState.memory)}</td>
+                        <td class="${fifoClass}">${fifoState.isFault ? '❌ FALTA' : '✅ HIT'}</td>
+                        <td>${formatMemory(lruState.memory)}</td>
+                        <td class="${lruClass}">${lruState.isFault ? '❌ FALTA' : '✅ HIT'}</td>
+                        <td>${formatMemory(optState.memory)}</td>
+                        <td class="${optClass}">${optState.isFault ? '❌ FALTA' : '✅ HIT'}</td>
+                    </tr>
+                `;
+            }
+
+            testHTML += `</table>`;
+
+            // Comparar resultados
+            const fifoMatch = fifoResult.faults === test.expectedFIFO ? 'correct' : 'incorrect';
+            const lruMatch = lruResult.faults === test.expectedLRU ? 'correct' : 'incorrect';
+            const optMatch = optResult.faults === test.expectedOPT ? 'correct' : 'incorrect';
+
+            testHTML += `
+                <div style="margin-top: 15px;">
+                    <div class="result ${fifoMatch}">
+                        FIFO: ${fifoResult.faults} falhas (esperado: ${test.expectedFIFO}) ${fifoMatch === 'correct' ? '✅' : '❌'}
+                    </div>
+                    <div class="result ${lruMatch}">
+                        LRU: ${lruResult.faults} falhas (esperado: ${test.expectedLRU}) ${lruMatch === 'correct' ? '✅' : '❌'}
+                    </div>
+                    <div class="result ${optMatch}">
+                        OPT: ${optResult.faults} falhas (esperado: ${test.expectedOPT}) ${optMatch === 'correct' ? '✅' : '❌'}
+                    </div>
+                    <div class="result">
+                        RANDOM: ${randomResult.faults} falhas (variável - sem valor esperado)
+                    </div>
+                </div>
+            `;
+
+            resultsHTML += testHTML;
+        });
+
+        document.getElementById('results').innerHTML = resultsHTML;
+    </script>
+</body>
+</html>

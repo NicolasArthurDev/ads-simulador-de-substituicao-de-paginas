@@ -82,7 +82,7 @@
 
         .button-section {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -384,6 +384,139 @@
             margin-top: 5px;
         }
 
+        /* Estilos para Tabela de Decorrer dos Algoritmos */
+        .trace-table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .trace-table-container h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .trace-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .trace-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .trace-table th {
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #ddd;
+            font-size: 0.85em;
+        }
+
+        .trace-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            font-size: 0.85em;
+        }
+
+        .trace-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .trace-table tbody tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        .step-number {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 30px;
+        }
+
+        .page-reference {
+            font-weight: 600;
+            color: #333;
+            background: #fff3cd;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .memory-trace {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .hit-indicator {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75em;
+        }
+
+        .fault-indicator {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75em;
+        }
+
+        .table-section-header {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .algorithm-section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        /* Estilos para Abas de Algoritmos */
+        .algorithm-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: #333;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -426,8 +559,9 @@
         <!-- Button Section -->
         <div class="button-section">
             <button class="btn-auto" onclick="executaAutomatico()">🚀 Executar Automático</button>
-            <button class="btn-manual" onclick="iniciaModosManual()">👆 Modo Manual (FIFO)</button>
+            <button class="btn-manual" onclick="iniciaModosManual()">👆 Modo Manual (Selecionar Algoritmo)</button>
             <button class="btn-graph" onclick="geraGrafico()">📊 Gerar Gráfico</button>
+            <button class="btn-graph" onclick="geraTabela()" style="grid-column: span 1;">📋 Decorrer</button>
         </div>
 
         <!-- Error/Success Messages -->
@@ -444,8 +578,16 @@
 
         <!-- Manual Mode Section -->
         <div class="manual-section" id="manualSection">
-            <h3>👆 Modo Manual - FIFO (Passo a Passo)</h3>
-            <p style="color: #555; margin-bottom: 15px;">Clique em cada página para ver a evolução do algoritmo FIFO:</p>
+            <h3>👆 Modo Manual - Passo a Passo</h3>
+            <p style="color: #555; margin-bottom: 15px;">Selecione um algoritmo e clique em cada página para ver a evolução:</p>
+            
+            <!-- Algorithm Tabs -->
+            <div class="algorithm-tabs">
+                <button class="tab-btn active" onclick="mudarAlgoritmoManual('fifo')">FIFO</button>
+                <button class="tab-btn" onclick="mudarAlgoritmoManual('lru')">LRU</button>
+                <button class="tab-btn" onclick="mudarAlgoritmoManual('opt')">OPT</button>
+                <button class="tab-btn" onclick="mudarAlgoritmoManual('random')">RANDOM</button>
+            </div>
             
             <div class="sequence-display" id="sequenceDisplay"></div>
             
@@ -462,6 +604,12 @@
         <!-- Chart Container -->
         <div class="chart-container" id="chartContainer" style="display: none;">
             <canvas id="comparisonChart"></canvas>
+        </div>
+
+        <!-- Trace Table Section -->
+        <div class="trace-table-container" id="traceTableSection" style="display: none;">
+            <h3>📋 Decorrer dos Algoritmos - Passo a Passo</h3>
+            <div id="traceTableContent"></div>
         </div>
     </div>
 
@@ -490,15 +638,10 @@
 
             // Itera sobre cada página da sequência
             for (let page of seq) {
-                // Cria um snapshot do estado atual
-                let state = {
-                    page: page,                    // Página atual sendo acessada
-                    memory: [...memory],           // Cópia da memória no momento
-                    isFault: !memory.includes(page) // Verifica se é hit ou falta
-                };
+                let isFault = !memory.includes(page);
 
                 // Verifica se a página NÃO está na memória
-                if (!memory.includes(page)) {
+                if (isFault) {
                     faults++;  // Incrementa contador de falhas
                     
                     if (memory.length < quadros) {
@@ -510,7 +653,14 @@
                         memory.push(page); // Adiciona a nova página no final
                     }
                 }
-                // Se page.includes(page) é true, é um HIT, não fazemos nada
+                // Se isFault é false, é um HIT, não fazemos nada
+
+                // Cria um snapshot do estado APÓS processar
+                let state = {
+                    page: page,           // Página atual sendo acessada
+                    memory: [...memory],  // Cópia da memória APÓS processar
+                    isFault: isFault      // Se foi falta ou hit
+                };
 
                 history.push(state);  // Guarda o estado para referência futura
             }
@@ -544,16 +694,10 @@
             // Itera com índice para rastrear quando cada página foi usada
             for (let i = 0; i < seq.length; i++) {
                 let page = seq[i];
-                
-                // Snapshot do estado
-                let state = {
-                    page: page,
-                    memory: [...memory],
-                    isFault: !memory.includes(page)
-                };
+                let isFault = !memory.includes(page);
 
                 // Se a página não está na memória (FALTA)
-                if (!memory.includes(page)) {
+                if (isFault) {
                     faults++;
                     
                     if (memory.length < quadros) {
@@ -561,15 +705,16 @@
                         memory.push(page);
                     } else {
                         // Se está cheio, encontra a página menos recentemente usada
-                        let lruPage = memory[0];          // Inicia com a primeira página
-                        let minTime = lastUsed[lruPage] || 0;  // Seu timestamp (ou 0 se nunca foi usado)
+                        let lruPage = memory[0];
+                        let minTime = (lastUsed[memory[0]] !== undefined) ? lastUsed[memory[0]] : -1;
 
                         // Percorre todas as páginas na memória
                         for (let p of memory) {
+                            let pTime = (lastUsed[p] !== undefined) ? lastUsed[p] : -1;
                             // Se o timestamp desta página é menor que o mínimo encontrado
-                            if ((lastUsed[p] || 0) < minTime) {
-                                minTime = lastUsed[p] || 0;  // Atualiza o mínimo
-                                lruPage = p;                  // Esta é a página menos usada
+                            if (pTime < minTime) {
+                                minTime = pTime;  // Atualiza o mínimo
+                                lruPage = p;      // Esta é a página menos usada
                             }
                         }
 
@@ -584,14 +729,23 @@
                 // 'i' é o índice atual, representando "quando" a página foi usada
                 lastUsed[page] = i;
                 
+                // Snapshot do estado APÓS processar
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: isFault
+                };
+                
                 history.push(state);
             }
 
+
+            // Retorna o número total de falhas e o histórico de estados para análise
             return { faults, history };
         }
 
         /**
-         * Algoritmo OPT (Ótimo / Belády)
+         * Algoritmo OPT (Ótimo)
          * 
          * CONCEITO:
          * OPT substitui a página cujo próximo uso ocorrerá MAIS TARDE no futuro.
@@ -614,15 +768,10 @@
             // Itera sobre cada página na sequência
             for (let i = 0; i < seq.length; i++) {
                 let page = seq[i];
-                
-                let state = {
-                    page: page,
-                    memory: [...memory],
-                    isFault: !memory.includes(page)
-                };
+                let isFault = !memory.includes(page);
 
                 // Se a página não está na memória (FALTA)
-                if (!memory.includes(page)) {
+                if (isFault) {
                     faults++;
                     
                     if (memory.length < quadros) {
@@ -657,6 +806,12 @@
                     }
                 }
 
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: isFault
+                };
+
                 history.push(state);
             }
 
@@ -686,14 +841,10 @@
             let history = [];     // Histórico de estados
 
             for (let page of seq) {
-                let state = {
-                    page: page,
-                    memory: [...memory],
-                    isFault: !memory.includes(page)
-                };
+                let isFault = !memory.includes(page);
 
                 // Se a página não está na memória (FALTA)
-                if (!memory.includes(page)) {
+                if (isFault) {
                     faults++;
                     
                     if (memory.length < quadros) {
@@ -712,6 +863,12 @@
                         memory.push(page);
                     }
                 }
+
+                let state = {
+                    page: page,
+                    memory: [...memory],
+                    isFault: isFault
+                };
 
                 history.push(state);
             }
@@ -890,11 +1047,16 @@
         };
 
         /**
+         * ESTADO GLOBAL DO MODO MANUAL
+         */
+        let manualAlgorithm = 'fifo';
+
+        /**
          * INICIA MODO MANUAL
          * 
          * Função que prepara e inicia o modo manual:
          * 1. Valida entrada
-         * 2. Executa FIFO para obter histórico
+         * 2. Executa algoritmo para obter histórico
          * 3. Cria interface com botões clicáveis
          * 4. Exibe estado inicial
          */
@@ -905,7 +1067,8 @@
 
             const { numFrames, pages } = input;
 
-            // PASSO 2: Executa FIFO para obter histórico de estados
+            // PASSO 2: Executa FIFO por padrão para obter histórico de estados
+            manualAlgorithm = 'fifo';
             const resultado = fifo(pages, numFrames);
 
             // PASSO 3: Inicializa estado manual com valores limpos
@@ -914,7 +1077,7 @@
                 memory: [],               // Memória começa vazia
                 faults: 0,                // Falhas começam em 0
                 hits: 0,                  // Hits começam em 0
-                history: resultado.history, // Armazena histórico do FIFO
+                history: resultado.history, // Armazena histórico
                 pages: pages,
                 numFrames: numFrames
             };
@@ -923,6 +1086,7 @@
             document.getElementById('manualSection').classList.add('active');
             document.getElementById('automaticResults').style.display = 'none';
             document.getElementById('chartContainer').style.display = 'none';
+            document.getElementById('traceTableSection').style.display = 'none';
 
             // PASSO 5: Cria botões para cada página
             const sequenceDisplay = document.getElementById('sequenceDisplay');
@@ -938,11 +1102,70 @@
                 sequenceDisplay.appendChild(btn);
             });
 
-            // PASSO 6: Atualiza a tela com estado inicial
+            // PASSO 6: Atualiza abas
+            atualizaAbas();
+
+            // PASSO 7: Atualiza a tela com estado inicial
             atualizaTelaMnual();
             
-            // PASSO 7: Exibe mensagem de instrução
-            mostrarSucesso('Modo manual iniciado. Clique nas páginas para avançar!');
+            // PASSO 8: Exibe mensagem de instrução
+            mostrarSucesso('Modo manual iniciado. Selecione um algoritmo e clique nas páginas!');
+        }
+
+        /**
+         * MUDA ALGORITMO NO MODO MANUAL
+         */
+        function mudarAlgoritmoManual(algoritmo) {
+            const { pages, numFrames } = manualState;
+            
+            // Executa o algoritmo selecionado
+            let resultado;
+            switch(algoritmo) {
+                case 'fifo':
+                    resultado = fifo(pages, numFrames);
+                    break;
+                case 'lru':
+                    resultado = lru(pages, numFrames);
+                    break;
+                case 'opt':
+                    resultado = opt(pages, numFrames);
+                    break;
+                case 'random':
+                    resultado = random(pages, numFrames);
+                    break;
+                default:
+                    resultado = fifo(pages, numFrames);
+            }
+
+            // Atualiza estado manual
+            manualAlgorithm = algoritmo;
+            manualState = {
+                currentStep: 0,
+                memory: [],
+                faults: 0,
+                hits: 0,
+                history: resultado.history,
+                pages: pages,
+                numFrames: numFrames
+            };
+
+            // Atualiza interface
+            atualizaAbas();
+            atualizaTelaMnual();
+            mostrarSucesso(`Algoritmo alterado para ${algoritmo.toUpperCase()}. Clique nas páginas para começar!`);
+        }
+
+        /**
+         * ATUALIZA ABAS DO MODO MANUAL
+         */
+        function atualizaAbas() {
+            document.querySelectorAll('.tab-btn').forEach((btn, index) => {
+                btn.classList.remove('active');
+            });
+
+            const algoritmos = ['fifo', 'lru', 'opt', 'random'];
+            const indexAtual = algoritmos.indexOf(manualAlgorithm);
+            document.querySelectorAll('.tab-btn')[indexAtual].classList.add('active');
         }
 
         /**
@@ -955,24 +1178,31 @@
             // Não permite voltar (apenas avançar)
             if (stepIndex < manualState.currentStep) return;
 
-            // Processa cada passo do atual até o clicado
-            for (let i = manualState.currentStep; i <= stepIndex; i++) {
-                // Obtém o estado para este passo do histórico
+            // Reconstrói o estado desde o início até o passo clicado
+            let totalFaults = 0;
+            let totalHits = 0;
+            let finalMemory = [];
+
+            // Processa cada passo desde 0 até stepIndex
+            for (let i = 0; i <= stepIndex; i++) {
                 const state = manualState.history[i];
                 
-                // Atualiza memória com estado deste passo
-                manualState.memory = state.memory;
+                // A memória armazenada no state é APÓS processar a página
+                finalMemory = state.memory;
 
                 // Incrementa contador apropriado (falta ou hit)
                 if (state.isFault) {
-                    manualState.faults++;  // É uma falta
+                    totalFaults++;
                 } else {
-                    manualState.hits++;    // É um hit
+                    totalHits++;
                 }
-
-                // Avança o contador de passos
-                manualState.currentStep = i + 1;
             }
+
+            // Atualiza estado manual com os valores reconstructos
+            manualState.memory = finalMemory;
+            manualState.faults = totalFaults;
+            manualState.hits = totalHits;
+            manualState.currentStep = stepIndex + 1;
 
             // Atualiza a tela para mostrar novo estado
             atualizaTelaMnual();
@@ -1074,6 +1304,118 @@
         }
 
         // ==================== MODO GRÁFICO ====================
+
+        /**
+         * GERA TABELA DE DECORRER
+         * 
+         * Função que cria uma tabela mostrando o decorrer de todos os algoritmos
+         * Mostra cada passo, estado da memória e hit/falta para cada um
+         */
+        function geraTabela() {
+            // VALIDAÇÃO: Verifica se existem resultados para plotar
+            if (!window.lastResults) {
+                mostrarErro('Por favor, execute os algoritmos automaticamente primeiro!');
+                return;
+            }
+
+            // Mostra container da tabela e esconde outros
+            document.getElementById('traceTableSection').style.display = 'block';
+            document.getElementById('automaticResults').style.display = 'none';
+            document.getElementById('manualSection').classList.remove('active');
+            document.getElementById('chartContainer').style.display = 'none';
+
+            const pages = window.lastResults.pages;
+            const numFrames = window.lastResults.numFrames;
+            const input = { numFrames, pages };  // Recria input para execução
+            
+            // Executa todos os algoritmos novamente para obter histórico
+            const resultadoFIFO = fifo(pages, numFrames);
+            const resultadoLRU = lru(pages, numFrames);
+            const resultadoOPT = opt(pages, numFrames);
+            const resultadoRANDOM = random(pages, numFrames);
+
+            // Monta HTML da tabela
+            let tableHTML = `
+                <div class="table-section-header">
+                    <div class="algorithm-section-header">FIFO</div>
+                    <div class="algorithm-section-header">LRU</div>
+                    <div class="algorithm-section-header">OPT</div>
+                    <div class="algorithm-section-header">RANDOM</div>
+                </div>
+                <table class="trace-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;">Passo</th>
+                            <th style="width: 8%;">Página</th>
+                            <th style="width: 18%;">Memória FIFO</th>
+                            <th style="width: 10%;">FIFO</th>
+                            <th style="width: 18%;">Memória LRU</th>
+                            <th style="width: 10%;">LRU</th>
+                            <th style="width: 18%;">Memória OPT</th>
+                            <th style="width: 10%;">OPT</th>
+                            <th style="width: 18%;">Memória RANDOM</th>
+                            <th style="width: 10%;">RANDOM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Itera sobre cada passo da sequência
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                const fifoState = resultadoFIFO.history[i];
+                const lruState = resultadoLRU.history[i];
+                const optState = resultadoOPT.history[i];
+                const randomState = resultadoRANDOM.history[i];
+
+                // Função auxiliar para formatar memória
+                const formatMemory = (memory) => {
+                    if (memory.length === 0) return '[ - ]';
+                    return '[ ' + memory.join(' , ') + ' ]';
+                };
+
+                // Função auxiliar para criar indicador de hit/falta
+                const getIndicator = (isFault) => {
+                    return isFault ? 
+                        '<span class="fault-indicator">❌ Falta</span>' : 
+                        '<span class="hit-indicator">✅ Hit</span>';
+                };
+
+                tableHTML += `
+                    <tr>
+                        <td class="step-number">${i + 1}</td>
+                        <td class="page-reference">${page}</td>
+                        <td class="memory-trace">${formatMemory(fifoState.memory)}</td>
+                        <td>${getIndicator(fifoState.isFault)}</td>
+                        <td class="memory-trace">${formatMemory(lruState.memory)}</td>
+                        <td>${getIndicator(lruState.isFault)}</td>
+                        <td class="memory-trace">${formatMemory(optState.memory)}</td>
+                        <td>${getIndicator(optState.isFault)}</td>
+                        <td class="memory-trace">${formatMemory(randomState.memory)}</td>
+                        <td>${getIndicator(randomState.isFault)}</td>
+                    </tr>
+                `;
+            }
+
+            // Adiciona resumo final
+            tableHTML += `
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: #f0f0f0; font-weight: 600;">
+                            <td colspan="2">TOTAL DE FALHAS:</td>
+                            <td colspan="2" style="background: rgba(102, 126, 234, 0.2);">${resultadoFIFO.faults}</td>
+                            <td colspan="2" style="background: rgba(118, 75, 162, 0.2);">${resultadoLRU.faults}</td>
+                            <td colspan="2" style="background: rgba(240, 147, 251, 0.2);">${resultadoOPT.faults}</td>
+                            <td colspan="2" style="background: rgba(79, 172, 254, 0.2);">${resultadoRANDOM.faults}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+
+            // Insere HTML no container
+            document.getElementById('traceTableContent').innerHTML = tableHTML;
+            mostrarSucesso('Tabela de decorrer dos algoritmos gerada!');
+        }
 
         /**
          * GERA GRÁFICO
